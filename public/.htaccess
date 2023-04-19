@@ -1,0 +1,21 @@
+<IfModule mod_rewrite.c>
+  Options +FollowSymlinks -Multiviews
+  RewriteEngine On
+  RewriteBase /
+
+  RewriteRule ^index\.html$ - [L]
+  RewriteRule ^index\.php$ - [L]
+
+  # SEO 规则，检测到爬虫，则重写到 seo.php（这一段是按需添加的）
+  RewriteCond %{HTTP_USER_AGENT} (Baiduspider|360Spider|Yisou|Sogou|Google|bingbot|Sosospider|Yahoo|YoudaoBot|twitterbot|facebookexternalhit|W3C_Validator) [NC]
+  RewriteRule ^(.*)$ seo.php?/$1 [QSA,PT,L]
+  # SEO规则结束
+
+  RewriteCond %{QUERY_STRING} server=1 [OR,NC]
+  RewriteCond %{HTTP:server} true
+  RewriteRule ^(.*)$ index.php?/$1 [QSA,PT,L]
+
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>

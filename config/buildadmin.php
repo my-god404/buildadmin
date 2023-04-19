@@ -25,7 +25,7 @@ return [
         // 默认驱动方式
         'default' => 'mysql',
         // 加密key
-        'key'     => 'tcbDgmqLVzuAdNH39o0QnhOisvSCFZ7I',
+        'key'     => 'ap74twkX8jVbDmos3HCEf25AzhduZYrR',
         // 加密方式
         'algo'    => 'ripemd160',
         // 驱动
