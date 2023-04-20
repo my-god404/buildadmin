@@ -92,7 +92,7 @@ import { reactive } from 'vue'
 import { state } from '../store'
 import { moduleInstallState } from '../types'
 import { onRefreshTableData } from '../index'
-import { useTerminal } from '/@/stores/terminal'
+// import { useTerminal } from '/@/stores/terminal'
 import FormItem from '/@/components/formItem/index.vue'
 import { taskStatus } from '/@/components/terminal/constant'
 import { ElMessageBox } from 'element-plus'
@@ -100,26 +100,26 @@ import { useI18n } from 'vue-i18n'
 import { dependentInstallComplete } from '/@/api/backend/module'
 
 const { t } = useI18n()
-const terminal = useTerminal()
+// const terminal = useTerminal()
 const form = reactive({
     rebuild: 0,
 })
 
-const showTerminal = () => {
-    terminal.toggle(true)
-}
+// const showTerminal = () => {
+//     terminal.toggle(true)
+// }
 
-const onSubmitInstallDone = () => {
-    state.dialog.common = false
-    if (form.rebuild == 1) {
-        terminal.toggle(true)
-        terminal.addTaskPM('web-build', false, '', (res: number) => {
-            if (res == taskStatus.Success) {
-                terminal.toggle(false)
-            }
-        })
-    }
-}
+// const onSubmitInstallDone = () => {
+//     state.dialog.common = false
+//     if (form.rebuild == 1) {
+//         terminal.toggle(true)
+//         terminal.addTaskPM('web-build', false, '', (res: number) => {
+//             if (res == taskStatus.Success) {
+//                 terminal.toggle(false)
+//             }
+//         })
+//     }
+// }
 
 const onConfirmDepend = () => {
     ElMessageBox.confirm(t('module.Is the command that failed on the WEB terminal executed manually or in other ways successfully?'), t('Reminder'), {

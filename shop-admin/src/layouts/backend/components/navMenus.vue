@@ -35,11 +35,11 @@
             />
             <Icon :color="configStore.getColorVal('headerBarTabColor')" class="nav-menu-icon" v-else name="el-icon-FullScreen" size="18" />
         </div>
-        <div v-if="adminInfo.super" @click="terminal.toggle()" class="nav-menu-item pt2">
+        <!-- <div v-if="adminInfo.super" @click="terminal.toggle()" class="nav-menu-item pt2">
             <el-badge :is-dot="terminal.state.showDot">
                 <Icon :color="configStore.getColorVal('headerBarTabColor')" class="nav-menu-icon" name="local-terminal" size="26" />
             </el-badge>
-        </div>
+        </div> -->
         <el-dropdown
             v-if="adminInfo.super"
             @visible-change="onCurrentNavMenu($event, 'clear')"
@@ -98,7 +98,7 @@
             <Icon :color="configStore.getColorVal('headerBarTabColor')" class="nav-menu-icon" name="fa fa-cogs" size="18" />
         </div>
         <Config />
-        <TerminalVue />
+        <!-- <TerminalVue /> -->
     </div>
 </template>
 
@@ -111,20 +111,20 @@ import { ElMessage } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import Config from './config.vue'
 import { useAdminInfo } from '/@/stores/adminInfo'
-import { useTerminal } from '/@/stores/terminal'
+// import { useTerminal } from '/@/stores/terminal'
 import { Local, Session } from '/@/utils/storage'
 import { ADMIN_INFO, BA_ACCOUNT } from '/@/stores/constant/cacheKey'
 import router from '/@/router'
 import { routePush } from '/@/utils/router'
 import { logout } from '/@/api/backend/index'
 import { postClearCache } from '/@/api/common'
-import TerminalVue from '/@/components/terminal/index.vue'
+// import TerminalVue from '/@/components/terminal/index.vue'
 
 const { t } = useI18n()
 
 const adminInfo = useAdminInfo()
 const configStore = useConfig()
-const terminal = useTerminal()
+// const terminal = useTerminal()
 
 const state = reactive({
     isFullScreen: false,

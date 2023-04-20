@@ -10,19 +10,19 @@ import iconfontInit from '/@/utils/iconfont'
 import { useRoute } from 'vue-router'
 import { setTitleFromRoute } from '/@/utils/common'
 import { useConfig } from '/@/stores/config'
-import { useTerminal } from '/@/stores/terminal'
+//import { useTerminal } from '/@/stores/terminal'
 // modules import mark, Please do not remove.
 
 const config = useConfig()
 const route = useRoute()
-const terminal = useTerminal()
+//const terminal = useTerminal()
 
 // 初始化 element 的语言包
 const { getLocaleMessage } = useI18n()
 const lang = getLocaleMessage(config.lang.defaultLang) as any
 onMounted(() => {
     iconfontInit()
-    terminal.init()
+    //terminal.init()
 
     // Modules onMounted mark, Please do not remove.
 })

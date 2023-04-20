@@ -2,8 +2,8 @@ import { state } from './store'
 import { index, modules, info, createOrder, payOrder, postInstallModule, getInstallState, changeState, payCheck } from '/@/api/backend/module'
 import { useBaAccount } from '/@/stores/baAccount'
 import { ElNotification } from 'element-plus'
-import { useTerminal } from '/@/stores/terminal'
-import { taskStatus } from '/@/components/terminal/constant'
+// import { useTerminal } from '/@/stores/terminal'
+// import { taskStatus } from '/@/components/terminal/constant'
 import { moduleInstallState, moduleState } from './types'
 import { uuid } from '/@/utils/random'
 import { fullUrl } from '/@/utils/common'
@@ -257,22 +257,22 @@ export const execInstall = (uid: string, id: number, extend: anyObj = {}) => {
                 state.common.moduleState = moduleInstallState.DEPENDENT_WAIT_INSTALL
                 state.common.waitInstallDepend = res.data.wait_install
                 state.common.dependInstallState = 'executing'
-                const terminal = useTerminal()
-                if (res.data.wait_install.includes('npm_dependent_wait_install')) {
-                    terminal.addTaskPM('web-install', true, 'module-install:' + res.data.uid, (res: number) => {
-                        terminalTaskExecComplete(res, 'npm_dependent_wait_install')
-                    })
-                }
-                if (res.data.wait_install.includes('nuxt_npm_dependent_wait_install')) {
-                    terminal.addTaskPM('nuxt-install', true, 'module-install:' + res.data.uid, (res: number) => {
-                        terminalTaskExecComplete(res, 'nuxt_npm_dependent_wait_install')
-                    })
-                }
-                if (res.data.wait_install.includes('composer_dependent_wait_install')) {
-                    terminal.addTask('composer.update', true, 'module-install:' + res.data.uid, (res: number) => {
-                        terminalTaskExecComplete(res, 'composer_dependent_wait_install')
-                    })
-                }
+                // const terminal = useTerminal()
+                // if (res.data.wait_install.includes('npm_dependent_wait_install')) {
+                //     terminal.addTaskPM('web-install', true, 'module-install:' + res.data.uid, (res: number) => {
+                //         terminalTaskExecComplete(res, 'npm_dependent_wait_install')
+                //     })
+                // }
+                // if (res.data.wait_install.includes('nuxt_npm_dependent_wait_install')) {
+                //     terminal.addTaskPM('nuxt-install', true, 'module-install:' + res.data.uid, (res: number) => {
+                //         terminalTaskExecComplete(res, 'nuxt_npm_dependent_wait_install')
+                //     })
+                // }
+                // if (res.data.wait_install.includes('composer_dependent_wait_install')) {
+                //     terminal.addTask('composer.update', true, 'module-install:' + res.data.uid, (res: number) => {
+                //         terminalTaskExecComplete(res, 'composer_dependent_wait_install')
+                //     })
+                // }
             } else if (res.code == 0) {
                 ElNotification({
                     type: 'error',
@@ -419,19 +419,19 @@ export const execCommand = (data: anyObj) => {
         state.common.dialogTitle = '等待依赖安装'
         state.common.moduleState = moduleInstallState.DISABLE
         state.common.dependInstallState = 'executing'
-        const terminal = useTerminal()
-        data.commands.forEach((item: anyObj) => {
-            state.common.waitInstallDepend.push(item.type)
-            if (item.pm) {
-                terminal.addTaskPM(item.command, true, '', (res: number) => {
-                    terminalTaskExecComplete(res, item.type)
-                })
-            } else {
-                terminal.addTask(item.command, true, '', (res: number) => {
-                    terminalTaskExecComplete(res, item.type)
-                })
-            }
-        })
+        // const terminal = useTerminal()
+        // data.commands.forEach((item: anyObj) => {
+        //     state.common.waitInstallDepend.push(item.type)
+        //     if (item.pm) {
+        //         terminal.addTaskPM(item.command, true, '', (res: number) => {
+        //             terminalTaskExecComplete(res, item.type)
+        //         })
+        //     } else {
+        //         terminal.addTask(item.command, true, '', (res: number) => {
+        //             terminalTaskExecComplete(res, item.type)
+        //         })
+        //     }
+        // })
     }
 }
 

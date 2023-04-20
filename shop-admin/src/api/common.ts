@@ -18,8 +18,8 @@ export const adminBuildSuffixSvgUrl = '/admin/ajax/buildSuffixSvg'
 export const adminAreaUrl = '/admin/ajax/area'
 export const getTablePkUrl = '/admin/ajax/getTablePk'
 export const getTableFieldListUrl = '/admin/ajax/getTableFieldList'
-export const terminalUrl = '/admin/Terminal/index'
-export const changeTerminalConfigUrl = '/admin/ajax/changeTerminalConfig'
+//export const terminalUrl = '/admin/Terminal/index'
+//export const changeTerminalConfigUrl = '/admin/ajax/changeTerminalConfig'
 export const clearCacheUrl = '/admin/ajax/clearCache'
 
 // 公共
@@ -166,31 +166,31 @@ export function postClearCache(type: string) {
     )
 }
 
-/**
- * 构建命令执行窗口url
- */
-export function buildTerminalUrl(commandKey: string, uuid: string, extend: string) {
-    const adminInfo = useAdminInfo()
-    return (
-        getUrl() + terminalUrl + '?command=' + commandKey + '&uuid=' + uuid + '&extend=' + extend + '&batoken=' + adminInfo.getToken() + '&server=1'
-    )
-}
+// /**
+//  * 构建命令执行窗口url
+//  */
+// export function buildTerminalUrl(commandKey: string, uuid: string, extend: string) {
+//     const adminInfo = useAdminInfo()
+//     return (
+//         getUrl() + terminalUrl + '?command=' + commandKey + '&uuid=' + uuid + '&extend=' + extend + '&batoken=' + adminInfo.getToken() + '&server=1'
+//     )
+// }
 
 /**
  * 请求修改终端配置
  */
-export function postChangeTerminalConfig(data: { manager?: string; port?: string }): ApiPromise {
-    return createAxios(
-        {
-            url: changeTerminalConfigUrl,
-            method: 'POST',
-            data: data,
-        },
-        {
-            loading: true,
-        }
-    ) as ApiPromise
-}
+// export function postChangeTerminalConfig(data: { manager?: string; port?: string }): ApiPromise {
+//     return createAxios(
+//         {
+//             url: changeTerminalConfigUrl,
+//             method: 'POST',
+//             data: data,
+//         },
+//         {
+//             loading: true,
+//         }
+//     ) as ApiPromise
+// }
 
 /**
  * 远程下拉框数据获取

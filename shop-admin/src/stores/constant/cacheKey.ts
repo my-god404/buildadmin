@@ -10,7 +10,7 @@ export const STORE_CONFIG = 'storeConfig_v2'
 // 后台标签页
 export const STORE_TAB_VIEW_CONFIG = 'storeTabViewConfig'
 // 终端
-export const STORE_TERMINAL = 'storeTerminal'
+// export const STORE_TERMINAL = 'storeTerminal'
 
 // 工作时间
 export const WORKING_TIME = 'workingTime'

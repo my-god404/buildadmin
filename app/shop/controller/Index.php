@@ -19,9 +19,8 @@ class Index extends Merchant
     public function index()
     {
         $adminInfo = $this->auth->getInfo();
-        $adminInfo['super'] = $this->auth->isSuperAdmin();
+        $adminInfo['super'] = $this->auth->isSuperAdmin($adminInfo['id']);
         unset($adminInfo['token'], $adminInfo['refreshToken']);
-
         $menus = $this->auth->getMenus();
         if (!$menus) {
             $this->error(__('No background menu, please contact super administrator!'));
@@ -59,17 +58,24 @@ class Index extends Merchant
 
         // 检查提交
         if ($this->request->isPost()) {
+            $shop_id = $this->request->post('shop_id');
             $username = $this->request->post('username');
             $password = $this->request->post('password');
+            $mobile = $this->request->post('mobile');
             $keep = $this->request->post('keep');
 
             $rule = [
+                'username|' . __('Username') => 'require|length:3,30',
+                'shop_id|' . __('Shop_id') => 'require',
+                'mobile|' . __('Mobile') => 'require|length:8,11',
                 'username|' . __('Username') => 'require|length:3,30',
                 'password|' . __('Password') => 'require|regex:^(?!.*[&<>"\'\n\r]).{6,32}$',
             ];
             $data = [
                 'username' => $username,
                 'password' => $password,
+                'shop_id' => $shop_id,
+                'mobile' => $mobile,
             ];
             if ($captchaSwitch) {
                 $rule['captcha|' . __('Captcha')] = 'require|length:4,6';
@@ -92,7 +98,7 @@ class Index extends Merchant
 
             AdminLog::setTitle(__('Login'));
 
-            $res = $this->auth->login($username, $password, (bool)$keep);
+            $res = $this->auth->login($username, $password, $shop_id, $mobile, (bool)$keep);
             if ($res === true) {
                 $this->success(__('Login succeeded!'), [
                     'userInfo' => $this->auth->getInfo(),
