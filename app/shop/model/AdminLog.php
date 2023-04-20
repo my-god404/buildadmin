@@ -92,8 +92,19 @@ class AdminLog extends Model
             $title = $title ?: __('Unknown') . '(' . $action . ')';
             $title = $controllerTitle ? ($controllerTitle . '-' . $title) : $title;
         }
+        $d = [
+            'admin_id' => $admin_id,
+            'shop_id' => $auth->shop_id,
+            'username' => $username,
+            'url' => substr(request()->url(), 0, 1500),
+            'title' => $title,
+            'data' => !is_scalar($data) ? json_encode($data, JSON_UNESCAPED_UNICODE) : $data,
+            'ip' => request()->ip(),
+            'useragent' => substr(request()->server('HTTP_USER_AGENT'), 0, 255),
+        ];
         self::create([
             'admin_id' => $admin_id,
+            'shop_id' => $auth->shop_id,
             'username' => $username,
             'url' => substr(request()->url(), 0, 1500),
             'title' => $title,

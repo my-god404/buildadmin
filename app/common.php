@@ -177,14 +177,21 @@ if (!function_exists('get_route_remark')) {
      */
     function get_route_remark()
     {
+        $module = app('http')->getName();
         $controllername = request()->controller(true);
         $actionname     = request()->action(true);
         $path           = str_replace('.', '/', $controllername);
-
-        $remark = Db::name('menu_rule')
-            ->where('name', $path)
-            ->whereOr('name', $path . '/' . $actionname)
-            ->value('remark');
+        if($module == 'shop'){
+            $remark = Db::name('shop_menu_rule')
+                ->where('name', $path)
+                ->whereOr('name', $path . '/' . $actionname)
+                ->value('remark');
+        }else{
+            $remark = Db::name('menu_rule')
+                ->where('name', $path)
+                ->whereOr('name', $path . '/' . $actionname)
+                ->value('remark');
+        }
         return __((string)$remark);
     }
 }

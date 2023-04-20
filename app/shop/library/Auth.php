@@ -22,6 +22,11 @@ use think\db\exception\ModelNotFoundException;
 class Auth extends \ba\Auth
 {
     /**
+     * 用户有权限的规则节点
+     */
+    protected $rules = [];
+
+    /**
      * @var Auth 对象实例
      */
     protected static $instance;
@@ -38,6 +43,10 @@ class Auth extends \ba\Auth
      * @var Admin Model实例
      */
     protected $model = null;
+    /**
+     * @var int shop_id 商户ID
+     */
+    protected $shop_id = 0;
     /**
      * @var string 令牌
      */
@@ -63,6 +72,16 @@ class Auth extends \ba\Auth
      * @var string[] 允许输出的字段
      */
     protected $allowFields = ['id', 'username', 'nickname', 'avatar', 'lastlogintime', 'shop_id', 'shop'];
+
+    /**
+     * 默认配置
+     * @var array|string[]
+     */
+    protected $config = [
+        'auth_group'        => 'shop_admin_group', // 用户组数据表名
+        'auth_group_access' => 'shop_admin_group_access', // 用户-用户组关系表
+        'auth_rule'         => 'shop_menu_rule', // 权限规则表
+    ];
 
     public function __construct(array $config = [])
     {
@@ -126,6 +145,7 @@ class Auth extends \ba\Auth
                 return false;
             }
             $this->token = $token;
+            $this->shop_id = $this->model['shop_id'];
             $this->loginSuccessful();
             return true;
         } else {
@@ -138,17 +158,24 @@ class Auth extends \ba\Auth
      * 管理员登录
      * @param string $username
      * @param string $password
+     * @param int $shop_id
+     * @param string $mobile
      * @param bool $keeptime
      * @return bool
      * @throws DataNotFoundException
      * @throws DbException
      * @throws ModelNotFoundException
      */
-    public function login(string $username, string $password, bool $keeptime = false): bool
+    public function login(string $username, string $password, int $shop_id, string $mobile, bool $keeptime = false): bool
     {
-        $this->model = Admin::withJoin($this->withJoinTable, $this->withJoinType)->where('admin.username', $username)->find();
+//        $this->model = Admin::withJoin($this->withJoinTable, $this->withJoinType)->where('admin.username', $username)->find();
+        $this->model = Admin::withJoin($this->withJoinTable, $this->withJoinType)->where('admin.mobile', $mobile)->find();
+//        if (!$this->model) {
+//            $this->setError('Username is incorrect');
+//            return false;
+//        }
         if (!$this->model) {
-            $this->setError('Username is incorrect');
+            $this->setError('ShopMobile is incorrect');
             return false;
         }
         if ($this->model['status'] == '0') {
@@ -345,19 +372,104 @@ class Auth extends \ba\Auth
         return parent::check($name, $uid ?: $this->id, $relation, $mode);
     }
 
-    public function getGroups(int $uid = 0): array
+    /**
+     * 获取用户所有分组和对应权限规则
+     * @param int $uid
+     * @return array
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
+     */
+    public function getGroups(int $uid): array
     {
-        return parent::getGroups($uid ?: $this->id);
+        static $groups = [];
+        if (isset($groups[$uid])) {
+            return $groups[$uid];
+        }
+
+        if ($this->config['auth_group_access']) {
+            $userGroups = Db::name($this->config['auth_group_access'])
+                ->alias('aga')
+                ->join($this->config['auth_group'] . ' ag', 'aga.group_id = ag.id', 'LEFT')
+                ->field('aga.uid,aga.group_id,ag.id,ag.pid,ag.name,ag.rules')
+                ->where("aga.uid='$uid' and ag.status='1' and aga.shop_id='$this->shop_id'")
+                ->select()->toArray();
+        } else {
+            $userGroups = [];
+        }
+
+        $groups[$uid] = $userGroups ?: [];
+        return $groups[$uid];
     }
 
-    public function getRuleList(int $uid = 0): array
+    /**
+     * 获得权限规则列表
+     * @param int $uid 用户id
+     * @return array
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
+     */
+    public function getRuleList(int $uid): array
     {
-        return parent::getRuleList($uid ?: $this->id);
+        // 静态保存所有用户验证通过的权限列表
+        static $ruleList = [];
+        if (isset($ruleList[$uid])) {
+            return $ruleList[$uid];
+        }
+
+        // 读取用户规则节点
+        $ids = $this->getRuleIds($uid);
+        if (empty($ids)) {
+            $ruleList[$uid] = [];
+            return [];
+        }
+
+        $where[] = ['status', '=', '1'];
+        $where[] = ['shop_id', '=', $this->shop_id];
+        // 如果没有 * 则只获取用户拥有的规则
+        if (!in_array('*', $ids)) {
+            $where[] = ['id', 'in', $ids];
+        }
+        // 读取用户组所有权限规则
+        $this->rules = Db::name($this->config['auth_rule'])
+            ->withoutField(['remark', 'status', 'weigh', 'updatetime', 'createtime'])
+            ->where($where)
+            ->order('weigh desc,id asc')
+            ->select()->toArray();
+
+        // 用户规则
+        $rules = [];
+        if (in_array('*', $ids)) {
+            $rules[] = "*";
+        }
+        foreach ($this->rules as $key => $rule) {
+            $rules[$rule['id']] = strtolower($rule['name']);
+            if (isset($rule['keepalive']) && $rule['keepalive']) {
+                $this->rules[$key]['keepalive'] = $rule['name'];
+            }
+        }
+        $ruleList[$uid] = $rules;
+        return array_unique($rules);
     }
 
-    public function getRuleIds(int $uid = 0): array
+    /**
+     * 获取权限规则ids
+     * @param int $uid
+     * @return array
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
+     */
+    public function getRuleIds(int $uid): array
     {
-        return parent::getRuleIds($uid ?: $this->id);
+        // 用户的组别和规则ID
+        $groups = $this->getGroups($uid);
+        $ids    = [];
+        foreach ($groups as $g) {
+            $ids = array_merge($ids, explode(',', trim($g['rules'], ',')));
+        }
+        return array_unique($ids);
     }
 
     public function getMenus(int $uid = 0): array
@@ -365,9 +477,9 @@ class Auth extends \ba\Auth
         return parent::getMenus($uid ?: $this->id);
     }
 
-    public function isSuperAdmin(): bool
+    public function isSuperAdmin(int $uid = 0): bool
     {
-        return in_array('*', $this->getRuleIds());
+        return in_array('*', $this->getRuleIds($uid));
     }
 
     /**
@@ -382,6 +494,7 @@ class Auth extends \ba\Auth
 //        $groupIds = Db::name('admin_group_access')
         $groupIds = Db::name('shop_admin_group_access')
             ->where('uid', $this->id)
+            ->where('shop_id', $this->shop_id)
             ->select();
         $children = [];
         foreach ($groupIds as $group) {
@@ -409,6 +522,7 @@ class Auth extends \ba\Auth
 //        return Db::name('admin_group_access')
         return Db::name('shop_admin_group_access')
             ->where('group_id', 'in', $groups)
+            ->where('shop_id', $this->shop_id)
             ->column('uid');
     }
 
@@ -423,9 +537,9 @@ class Auth extends \ba\Auth
     public function getAllAuthGroups(string $dataLimit): array
     {
         // 当前管理员拥有的权限
-        $rules = $this->getRuleIds();
+        $rules = $this->getRuleIds($this->shop_id);
         $allAuthGroups = [];
-        $groups = AdminGroup::where('status', '1')->select();
+        $groups = AdminGroup::where('status', '1')->where('shop_id',$this->shop_id)->select();
         foreach ($groups as $group) {
             if ($group['rules'] == '*') {
                 continue;

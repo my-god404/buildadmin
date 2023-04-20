@@ -58,17 +58,16 @@ class Index extends Merchant
 
         // 检查提交
         if ($this->request->isPost()) {
-            $shop_id = $this->request->post('shop_id');
-            $username = $this->request->post('username');
+            $shop_id = $this->request->post('shop_id',0);
+            $username = $this->request->post('username','account');
             $password = $this->request->post('password');
             $mobile = $this->request->post('mobile');
             $keep = $this->request->post('keep');
 
             $rule = [
-                'username|' . __('Username') => 'require|length:3,30',
-                'shop_id|' . __('Shop_id') => 'require',
+//                'username|' . __('Username') => 'require|length:3,30',
+//                'shop_id|' . __('Shop_id') => 'require',
                 'mobile|' . __('Mobile') => 'require|length:8,11',
-                'username|' . __('Username') => 'require|length:3,30',
                 'password|' . __('Password') => 'require|regex:^(?!.*[&<>"\'\n\r]).{6,32}$',
             ];
             $data = [

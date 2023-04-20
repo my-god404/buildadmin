@@ -1,5 +1,6 @@
 export default {
     'Please enter an account': '请输入账号',
+    'Please enter an mobile': '请输入手机号',
     'Please input a password': '请输入密码',
     'Please enter the verification code': '请输入验证码',
     'Hold session': '保持会话',

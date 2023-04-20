@@ -96,7 +96,7 @@ CREATE TABLE `tp_shop_admin_log` (
   `data` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '请求参数',
   `ip` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT 'IP',
   `useragent` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT 'User-Agent',
-  `createtime` datetime DEFAULT NULL COMMENT '操作时间',
+  `createtime` int(10) DEFAULT NULL COMMENT '操作时间',
   `diff_data` json DEFAULT NULL COMMENT '修改的数据',
   `before_data` json DEFAULT NULL COMMENT '修改前数据',
   `after_data` json DEFAULT NULL COMMENT '修改后数据',

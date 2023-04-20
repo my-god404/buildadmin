@@ -96,6 +96,11 @@ class Merchant extends Api
     protected $dataLimitField = 'admin_id';
 
     /**
+     * 商户ID
+     */
+    protected $shop_id = 0;
+
+    /**
      * 数据限制开启时自动填充字段值为当前管理员id
      */
     protected $dataLimitFieldAutoFill = true;
@@ -109,7 +114,7 @@ class Merchant extends Api
      * 引入traits
      * traits内实现了index、add、edit等方法
      */
-    use \app\admin\library\traits\Backend;
+    use \app\shop\library\traits\Backend;
 
     public function initialize()
     {
@@ -143,7 +148,7 @@ class Merchant extends Api
             } catch (HttpResponseException $e) {
             }
         }
-
+        $this->shop_id = $this->auth->shop_id;
         // 管理员验权和登录标签位
         Event::trigger('backendInit', $this->auth);
     }
@@ -287,7 +292,7 @@ class Merchant extends Api
         if ($dataLimitAdminIds) {
             $where[] = [$tableAlias . $this->dataLimitField, 'in', $dataLimitAdminIds];
         }
-
+        $where[] = [$tableAlias . 'shop_id', '=', $this->shop_id];
         return [$where, $alias, $limit, $order];
     }
 

@@ -24,13 +24,26 @@
                     <img class="profile-avatar" src="~assets/avatar.png" alt="" />
                     <div class="content">
                         <el-form @keyup.enter="onSubmit(formRef)" ref="formRef" :rules="rules" size="large" :model="form">
-                            <el-form-item prop="username">
+                            <!-- <el-form-item prop="username">
                                 <el-input
                                     ref="usernameRef"
                                     type="text"
                                     clearable
                                     v-model="form.username"
                                     :placeholder="t('login.Please enter an account')"
+                                >
+                                    <template #prefix>
+                                        <Icon name="fa fa-user" class="form-item-icon" size="16" color="var(--el-input-icon-color)" />
+                                    </template>
+                                </el-input>
+                            </el-form-item> -->
+                            <el-form-item prop="mobile">
+                                <el-input
+                                    ref="mobileRef"
+                                    type="text"
+                                    clearable
+                                    v-model="form.mobile"
+                                    :placeholder="t('login.Please enter an mobile')"
                                 >
                                     <template #prefix>
                                         <Icon name="fa fa-user" class="form-item-icon" size="16" color="var(--el-input-icon-color)" />
@@ -121,10 +134,12 @@ const onChangeCaptcha = () => {
 
 const formRef = ref<InstanceType<typeof ElForm>>()
 const usernameRef = ref<InstanceType<typeof ElInput>>()
+const mobileRef = ref<InstanceType<typeof ElInput>>()
 const passwordRef = ref<InstanceType<typeof ElInput>>()
 const captchaRef = ref<InstanceType<typeof ElInput>>()
 const form = reactive({
     username: '',
+    mobile: '',
     password: '',
     captcha: '',
     keep: false,
@@ -136,7 +151,8 @@ const { t } = useI18n()
 
 // 表单验证规则
 const rules = reactive({
-    username: [buildValidatorData({ name: 'required', message: t('login.Please enter an account') }), buildValidatorData({ name: 'account' })],
+    // username: [buildValidatorData({ name: 'required', message: t('login.Please enter an account') }), buildValidatorData({ name: 'account' })],
+    mobile: [buildValidatorData({ name: 'required', message: t('login.Please enter an mobile') }), buildValidatorData({ name: 'mobile' })],
     password: [buildValidatorData({ name: 'required', message: t('login.Please input a password') }), buildValidatorData({ name: 'password' })],
     captcha: [
         buildValidatorData({ name: 'required', title: t('login.Please enter the verification code') }),
@@ -150,8 +166,8 @@ const rules = reactive({
 })
 
 const focusInput = () => {
-    if (form.username === '') {
-        usernameRef.value!.focus()
+    if (form.mobile === '') {
+        mobileRef.value!.focus()
     } else if (form.password === '') {
         passwordRef.value!.focus()
     } else if (form.captcha === '') {

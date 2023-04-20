@@ -1,5 +1,6 @@
 export default {
     'Please enter an account': 'Please enter your account',
+    'Please enter an mobile': 'Please enter your mobile',
     'Please input a password': 'Please enter your password',
     'Please enter the verification code': 'Please enter the Captcha',
     'Hold session': 'Keep the session',
